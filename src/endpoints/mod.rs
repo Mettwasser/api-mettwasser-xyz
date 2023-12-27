@@ -1,3 +1,3 @@
-mod image_round;
+pub mod image_round;
 
-pub use image_round::round_image;
+pub use image_round::endpoint::round_image;

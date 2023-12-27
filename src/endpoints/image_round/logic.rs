@@ -1,42 +1,38 @@
-use crate::{
-    error::{ApiError, IntoApiError},
-    error_codes as ErrorCodes,
-};
-use axum::{
-    extract::{Path, Query},
-    http::{header, StatusCode},
-    response::{AppendHeaders, IntoResponse, Response},
-    Json,
-};
+use super::error::RoundQueryParamError;
 use image::{ImageBuffer, Rgba};
 use serde::{Deserialize, Serialize};
 
-struct DefaultValues {}
-impl DefaultValues {
-    #[inline(always)]
-    fn radius() -> f32 {
-        3f32
-    }
+#[inline(always)]
+fn default_radius() -> u32 {
+    3
 }
 
-#[derive(Debug, Default, Clone, Copy)]
-struct BorderRadius(pub u32, pub u32, pub u32, pub u32);
+pub fn round(
+    img: &mut ImageBuffer<Rgba<u8>, Vec<u8>>,
+    radius: RoundImageQueryParams,
+) -> Result<(), RoundQueryParamError> {
+    let tl = radius.top_left();
+    let tr = radius.top_right();
+    let bl = radius.bottom_left();
+    let br = radius.bottom_right();
 
-fn round(img: &mut ImageBuffer<Rgba<u8>, Vec<u8>>, radius: &mut BorderRadius) {
     let (width, height) = img.dimensions();
-    assert!(radius.0 + radius.1 <= width);
-    assert!(radius.3 + radius.2 <= width);
-    assert!(radius.0 + radius.3 <= height);
-    assert!(radius.1 + radius.2 <= height);
+    if tl + tr > width || tr + bl > width || tl + br > height || tr + bl > height {
+        return Err(RoundQueryParamError::new(
+            [tl, tr, bl, br],
+            "Radius out of range!".into(),
+        ));
+    }
 
     // top left
-    border_radius(img, radius.0, |x, y| (x - 1, y - 1));
+    border_radius(img, tl, |x, y| (x - 1, y - 1));
     // top right
-    border_radius(img, radius.1, |x, y| (width - x, y - 1));
+    border_radius(img, tr, |x, y| (width - x, y - 1));
     // bottom right
-    border_radius(img, radius.2, |x, y| (width - x, height - y));
+    border_radius(img, bl, |x, y| (width - x, height - y));
     // bottom left
-    border_radius(img, radius.3, |x, y| (x - 1, height - y));
+    border_radius(img, br, |x, y| (x - 1, height - y));
+    Ok(())
 }
 
 fn border_radius(
@@ -140,36 +136,47 @@ fn border_radius(
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RoundImageQueryParams {
-    #[serde(default = "DefaultValues::radius")]
-    top_left: f32,
+    pub url: String,
 
-    #[serde(default = "DefaultValues::radius")]
-    top_right: f32,
+    #[serde(default = "default_radius")]
+    corner_radius: u32,
 
-    #[serde(default = "DefaultValues::radius")]
-    bottom_left: f32,
+    top_left: Option<u32>,
 
-    #[serde(default = "DefaultValues::radius")]
-    bottom_right: f32,
+    top_right: Option<u32>,
+
+    bottom_left: Option<u32>,
+
+    bottom_right: Option<u32>,
 }
 
-pub async fn round_image(
-    Path(url): Path<String>,
-    Query(RoundImageQueryParams {
-        top_left,
-        top_right,
-        bottom_left,
-        bottom_right,
-    }): Query<RoundImageQueryParams>,
-) -> Result<
-    (
-        AppendHeaders<[(header::HeaderName, &'static str); 1]>,
-        Vec<u8>,
-    ),
-    Json<ApiError>,
-> {
-    let response = reqwest::get(url)
-        .await
-        .map_err(|err| err.into_api_error())?;
-    Ok((AppendHeaders([(header::CONTENT_TYPE, "image/png")]), vec![]))
+impl RoundImageQueryParams {
+    #[inline(always)]
+    pub fn top_left(&self) -> u32 {
+        self.top_left.unwrap_or(self.corner_radius)
+    }
+
+    #[inline(always)]
+    pub fn top_right(&self) -> u32 {
+        self.top_right.unwrap_or(self.corner_radius)
+    }
+
+    #[inline(always)]
+    pub fn bottom_left(&self) -> u32 {
+        self.bottom_left.unwrap_or(self.corner_radius)
+    }
+
+    #[inline(always)]
+    pub fn bottom_right(&self) -> u32 {
+        self.bottom_right.unwrap_or(self.corner_radius)
+    }
+
+    pub fn list_corners(&self) -> (u32, u32, u32, u32) {
+        (
+            self.top_left(),
+            self.top_right(),
+            self.bottom_left(),
+            self.bottom_right(),
+        )
+    }
 }

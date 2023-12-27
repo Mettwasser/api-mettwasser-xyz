@@ -1,10 +1,3 @@
-use axum::{
-    extract::Path,
-    response::Html,
-    routing::{get, post},
-    Router,
-};
-
 use mettwasser_xyz::endpoints::round_image;
 
 use mettwasser_xyz::router;
@@ -12,7 +5,7 @@ use mettwasser_xyz::router;
 #[tokio::main]
 async fn main() {
     let app = router! {
-        "/image/round/:image_url" => round_image GET,
+        "/image/round" => round_image GET,
     };
 
     // run it
