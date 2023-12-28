@@ -2,6 +2,12 @@ use mettwasser_xyz::endpoints::round_image;
 
 use mettwasser_xyz::router;
 
+#[cfg(debug_assertions)]
+static HOST_IP: &str = "127.0.0.1:3000";
+
+#[cfg(not(debug_assertions))]
+static HOST_IP: &str = "0.0.0.0:3000";
+
 #[tokio::main]
 async fn main() {
     let app = router! {
@@ -9,7 +15,7 @@ async fn main() {
     };
 
     // run it
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind(HOST_IP).await.unwrap();
 
     println!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();

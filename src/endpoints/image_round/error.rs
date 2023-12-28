@@ -6,6 +6,7 @@ use crate::error::ApiError;
 pub struct RoundQueryParamError {
     query_params: [u32; 4],
     message: String,
+    code: u16,
 }
 
 impl RoundQueryParamError {
@@ -13,6 +14,7 @@ impl RoundQueryParamError {
         Self {
             query_params,
             message,
+            code: 400,
         }
     }
 }

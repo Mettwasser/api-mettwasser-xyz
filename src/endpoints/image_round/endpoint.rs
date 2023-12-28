@@ -8,6 +8,7 @@ use std::result::Result as StdResult;
 type Result<T> = std::result::Result<T, RoundError>;
 
 use RoundError::*;
+
 async fn fetch_image(url: &str) -> Result<Bytes> {
     reqwest::get(url)
         .await

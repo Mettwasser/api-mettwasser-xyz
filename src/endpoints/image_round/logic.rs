@@ -1,28 +1,41 @@
+use std::cmp::min;
+
 use super::error::RoundQueryParamError;
 use image::{ImageBuffer, Rgba};
 use serde::{Deserialize, Serialize};
 
-#[inline(always)]
-fn default_radius() -> u32 {
-    3
+mod defaults {
+    #[inline(always)]
+    pub(super) fn radius() -> u32 {
+        3
+    }
+
+    #[inline(always)]
+    pub(super) fn auto() -> bool {
+        false
+    }
 }
 
 pub fn round(
     img: &mut ImageBuffer<Rgba<u8>, Vec<u8>>,
-    radius: RoundImageQueryParams,
+    params: RoundImageQueryParams,
 ) -> Result<(), RoundQueryParamError> {
-    let tl = radius.top_left();
-    let tr = radius.top_right();
-    let bl = radius.bottom_left();
-    let br = radius.bottom_right();
-
     let (width, height) = img.dimensions();
-    if tl + tr > width || tr + bl > width || tl + br > height || tr + bl > height {
-        return Err(RoundQueryParamError::new(
-            [tl, tr, bl, br],
-            "Radius out of range!".into(),
-        ));
-    }
+
+    let (tl, tr, bl, br);
+
+    if params.auto {
+        let smaller_dimension = min(width, height);
+        (tl, tr, bl, br) = [smaller_dimension / 2; 4].into();
+    } else {
+        (tl, tr, bl, br) = params.list_corners();
+        if tl + tr > width || tr + bl > width || tl + br > height || tr + bl > height {
+            return Err(RoundQueryParamError::new(
+                [tl, tr, bl, br],
+                "Radius out of range!".into(),
+            ));
+        }
+    };
 
     // top left
     border_radius(img, tl, |x, y| (x - 1, y - 1));
@@ -138,7 +151,10 @@ fn border_radius(
 pub struct RoundImageQueryParams {
     pub url: String,
 
-    #[serde(default = "default_radius")]
+    #[serde(default = "defaults::auto")]
+    pub auto: bool,
+
+    #[serde(default = "defaults::radius")]
     corner_radius: u32,
 
     top_left: Option<u32>,
