@@ -7,6 +7,12 @@ pub struct ApiError {
     pub code: u16,
 }
 
+impl ApiError {
+    pub fn new(message: String, code: u16) -> Self {
+        Self { message, code }
+    }
+}
+
 impl From<ApiError> for String {
     fn from(value: ApiError) -> Self {
         value.message

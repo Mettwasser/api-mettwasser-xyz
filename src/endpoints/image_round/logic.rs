@@ -1,17 +1,18 @@
 use std::cmp::min;
 
-use super::error::RoundQueryParamError;
 use image::{ImageBuffer, Rgba};
 use serde::{Deserialize, Serialize};
 
+use crate::error::ApiError;
+
 mod defaults {
     #[inline(always)]
-    pub(super) fn radius() -> u32 {
+    pub fn radius() -> u32 {
         3
     }
 
     #[inline(always)]
-    pub(super) fn auto() -> bool {
+    pub fn auto() -> bool {
         false
     }
 }
@@ -19,7 +20,7 @@ mod defaults {
 pub fn round(
     img: &mut ImageBuffer<Rgba<u8>, Vec<u8>>,
     params: RoundImageQueryParams,
-) -> Result<(), RoundQueryParamError> {
+) -> Result<(), ApiError> {
     let (width, height) = img.dimensions();
 
     let (tl, tr, bl, br);
@@ -30,10 +31,7 @@ pub fn round(
     } else {
         (tl, tr, bl, br) = params.list_corners();
         if tl + tr > width || tr + bl > width || tl + br > height || tr + bl > height {
-            return Err(RoundQueryParamError::new(
-                [tl, tr, bl, br],
-                "Radius out of range!".into(),
-            ));
+            return Err(ApiError::new("Radius out of range!".into(), 400));
         }
     };
 

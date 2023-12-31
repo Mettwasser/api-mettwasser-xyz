@@ -97,6 +97,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-swagger-ui"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "605877320e5ef98ba6bf000eeae03065557b0631d645c08ad6e84340d388948f"
+
+[[package]]
 name = "backtrace"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -765,6 +771,7 @@ name = "mettwasser-xyz"
 version = "0.1.1"
 dependencies = [
  "axum",
+ "axum-swagger-ui",
  "env_logger",
  "image",
  "reqwest",

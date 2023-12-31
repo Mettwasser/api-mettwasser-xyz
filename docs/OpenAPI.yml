@@ -1,0 +1,89 @@
+openapi: "3.0.2"
+info:
+  title: api.mettwasser.xyz
+  version: "1.0"
+servers:
+  - url: https://api.mettwasser.xyz/
+
+paths:
+  /image/round:
+    get:
+      tags:
+        - Image
+      description: "Rounds the Corners of an image."
+
+      parameters:
+        - name: url
+          description: The URL to the image that should be rounded
+          in: query
+          required: true
+          schema:
+            type: string
+
+        - name: auto
+          description: Whether the API tries to figure out the max. radius on its own. This means if width and height are the same, you'll get a perfectly round image. This will override everything else
+          in: query
+          schema:
+            type: boolean
+            default: false
+
+        - name: corner_radius
+          description: The radius to use when rounding the corners
+          in: query
+          schema:
+            type: integer
+            format: uint32
+            default: 3
+
+        - name: top_left
+          description: This overrides corner_radius for the top left corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+        - name: top_right
+          description: This overrides corner_radius for the top right corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+        - name: bottom_left
+          description: This overrides corner_radius for the bottom left corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+        - name: bottom_right
+          description: This overrides corner_radius for the bottom right corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+      responses:
+        200:
+          description: OK
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error during processing"
+
+                  code:
+                    type: integer
+                    format: uint16
+                    example: 400
