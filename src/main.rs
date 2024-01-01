@@ -3,10 +3,10 @@ use mettwasser_xyz::endpoints::round_image;
 use mettwasser_xyz::router;
 
 #[cfg(debug_assertions)]
-static HOST_IP: &str = "127.0.0.1:3000";
+const HOST_IP: &str = "127.0.0.1:3000";
 
 #[cfg(not(debug_assertions))]
-static HOST_IP: &str = "0.0.0.0:3000";
+const HOST_IP: &str = "0.0.0.0:3000";
 
 #[tokio::main]
 async fn main() {

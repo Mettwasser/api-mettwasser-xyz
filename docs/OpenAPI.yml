@@ -77,13 +77,18 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Error during processing"
+                $ref: "#/components/schemas/ApiError"
 
-                  code:
-                    type: integer
-                    format: uint16
-                    example: 400
+components:
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error during processing"
+
+        code:
+          type: integer
+          format: uint16
+          example: 500
