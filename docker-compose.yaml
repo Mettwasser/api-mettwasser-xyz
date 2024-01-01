@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api:
-    image: ghcr.io/mettwasser/mettwasser-xyz:latest
+    image: ghcr.io/mettwasser/api-mettwasser-xyz:latest
     tty: true
     stdin_open: true
     restart: unless-stopped

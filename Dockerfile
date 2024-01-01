@@ -4,4 +4,4 @@ COPY ./ ./
 
 RUN cargo build --release
 
-CMD [ "./target/release/mettwasser-xyz" ]
+CMD [ "./target/release/api-mettwasser-xyz" ]

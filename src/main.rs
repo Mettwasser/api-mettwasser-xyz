@@ -3,6 +3,9 @@ use mettwasser_xyz::docs::{docs, docs_internal};
 use mettwasser_xyz::endpoints::home;
 use mettwasser_xyz::endpoints::round_image;
 use mettwasser_xyz::router;
+use api_mettwasser_xyz::docs::{docs, docs_internal};
+use api_mettwasser_xyz::endpoints::round_image;
+use api_mettwasser_xyz::router;
 
 #[cfg(debug_assertions)]
 const HOST_IP: &str = "127.0.0.1:3000";
