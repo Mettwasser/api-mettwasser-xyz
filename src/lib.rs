@@ -1,3 +1,5 @@
+pub mod home;
+pub mod assets;
 pub mod docs;
 pub mod endpoints;
 pub mod error;
