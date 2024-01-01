@@ -4,14 +4,22 @@ use axum::{
     response::IntoResponse,
 };
 
-static GLOBAL_CSS: &str = include_str!("../assets/global.css");
+use crate::ASSETS;
 
 pub async fn assets(Path(path): Path<String>) -> impl IntoResponse {
     let mut headers = HeaderMap::new();
 
-    if path == "global.css" {
+    if path == "index.css" {
         headers.insert(header::CONTENT_TYPE, "text/css".parse().unwrap());
-        (StatusCode::OK, headers, GLOBAL_CSS)
+        (
+            StatusCode::OK,
+            headers,
+            ASSETS
+                .get_file("index.css")
+                .unwrap()
+                .contents_utf8()
+                .unwrap(),
+        )
     } else {
         (StatusCode::NOT_FOUND, headers, "")
     }

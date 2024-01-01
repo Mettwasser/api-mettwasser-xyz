@@ -1,10 +1,11 @@
 use super::logic::RoundImageQueryParams;
-use crate::error::ApiError;
-use crate::{endpoints::image_round::logic::round, error::IntoApiError};
+use crate::{
+    endpoints::image_round::logic::round,
+    error::{ApiError, IntoApiError},
+};
 use axum::{body::Bytes, extract::Query, http::header, response::AppendHeaders, Json};
 use image::{io::Reader, ImageFormat};
-use std::io::Cursor;
-use std::result::Result as StdResult;
+use std::{io::Cursor, result::Result as StdResult};
 
 type Result<T> = std::result::Result<T, ApiError>;
 

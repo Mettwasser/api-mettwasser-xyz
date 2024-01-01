@@ -1,2 +1,4 @@
 /target
 /github
+/rustfmt.toml
+/build
