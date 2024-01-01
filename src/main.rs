@@ -1,6 +1,6 @@
-use mettwasser_xyz::home::home;
 use mettwasser_xyz::assets::assets;
 use mettwasser_xyz::docs::{docs, docs_internal};
+use mettwasser_xyz::endpoints::home;
 use mettwasser_xyz::endpoints::round_image;
 use mettwasser_xyz::router;
 
@@ -13,8 +13,6 @@ const HOST_IP: &str = "0.0.0.0:3000";
 #[tokio::main]
 async fn main() {
     let app = router! {
-        "/" => home GET,
-
         // assets endpoints
         "/assets/*path" => assets GET,
 
@@ -23,6 +21,7 @@ async fn main() {
         "/docs" => docs GET,
 
         // other endpoints
+        "/" => home GET,
         "/image/round" => round_image GET,
     };
 
