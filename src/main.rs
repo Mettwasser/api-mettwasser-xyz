@@ -1,9 +1,6 @@
-use mettwasser_xyz::assets::assets;
-use mettwasser_xyz::docs::{docs, docs_internal};
-use mettwasser_xyz::endpoints::home;
-use mettwasser_xyz::endpoints::round_image;
-use mettwasser_xyz::router;
+use api_mettwasser_xyz::assets::assets;
 use api_mettwasser_xyz::docs::{docs, docs_internal};
+use api_mettwasser_xyz::endpoints::home;
 use api_mettwasser_xyz::endpoints::round_image;
 use api_mettwasser_xyz::router;
 
