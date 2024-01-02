@@ -1,13 +1,17 @@
-# build tailwind
-FROM d3fk/tailwindcss:latest as tw
-COPY ./ ./
+FROM rust:latest
 
-CMD [ "./tailwindcss", "-c", "./tailwind.config.js", "-i", "./assets/index.css", "-o", "./build/index.css" ]
+COPY . .
 
+# Download TailwindCSS CLI
+RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-arm64
+RUN chmod +x tailwindcss-linux-arm64
+RUN mv tailwindcss-linux-arm64 tailwindcss
 
-# Build rust and run it
-FROM rust:1.75
-COPY ./ ./
+# Build TailwindCSS
+RUN ./tailwindcss -c ./tailwind.config.js -i ./assets/styles/index.css -o ./build/index.css --minify
 
+# Build Rust
 RUN cargo build --release
-CMD [ "./target/release/api-mettwasser-xyz" ]
+
+# Run the app
+ENTRYPOINT ./target/release/api-mettwasser-xyz
