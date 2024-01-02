@@ -1,11 +1,13 @@
-FROM d3fk/tailwindcss:latest
+# build tailwind
+FROM d3fk/tailwindcss:latest as tw
 COPY ./ ./
 
-RUN ./tailwindcss
+CMD [ "./tailwindcss", "-c", "./tailwind.config.js", "-i", "./assets/index.css", "-o", "./build/index.css" ]
 
-FROM rust:latest
 
+# Build rust and run it
+FROM rust:1.75
+COPY ./ ./
 
 RUN cargo build --release
-
-RUN ./target/release/api-mettwasser-xyz
+CMD [ "./target/release/api-mettwasser-xyz" ]
