@@ -8,4 +8,4 @@ pub mod macros;
 use include_dir::{include_dir, Dir};
 
 const TEMPLATES: Dir = include_dir!("./templates");
-const ASSETS: Dir = include_dir!("./assets");
+const ASSETS: Dir = include_dir!("./build");
