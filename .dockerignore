@@ -1,4 +1,5 @@
+/.git
+/.github
 /target
-/github
-/rustfmt.toml
 /build
+/rustfmt.toml
