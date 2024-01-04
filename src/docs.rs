@@ -6,5 +6,5 @@ pub async fn docs_internal() -> &'static str {
 }
 
 pub async fn docs() -> Html<String> {
-    Html(swagger_ui("docs/mettwasser.xyz"))
+    Html(swagger_ui("docs/api.mettwasser.xyz"))
 }
