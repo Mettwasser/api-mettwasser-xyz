@@ -18,7 +18,7 @@ async fn main() {
         "/assets/*path" => assets GET,
 
         // documentation endpoints
-        "/docs/mettwasser.xyz" => docs_internal GET, // "internal" endpoint (string representation for the SwaggerUI Template - needs an actual url)
+        "/docs/api.mettwasser.xyz" => docs_internal GET, // "internal" endpoint (string representation for the SwaggerUI Template - needs an actual url)
         "/docs" => docs GET,
 
         // other endpoints
