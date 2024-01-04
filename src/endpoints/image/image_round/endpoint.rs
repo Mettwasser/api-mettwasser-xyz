@@ -1,8 +1,6 @@
+use super::logic::round;
 use super::logic::RoundImageQueryParams;
-use crate::{
-    endpoints::image_round::logic::round,
-    error::{ApiError, IntoApiError},
-};
+use crate::error::{ApiError, IntoApiError};
 use axum::{body::Bytes, extract::Query, http::header, response::AppendHeaders, Json};
 use image::{io::Reader, ImageFormat};
 use std::{io::Cursor, result::Result as StdResult};
