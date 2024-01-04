@@ -1,3 +1,4 @@
+"use strict";
 export default function typewriter(element, properties) {
     let index = 0;
     let inTag = false;
