@@ -1,7 +1,7 @@
 use api_mettwasser_xyz::{
     assets::assets,
     docs::{docs, docs_internal},
-    endpoints::{home, round_image},
+    endpoints::{home, preview_color, round_image},
     router,
 };
 
@@ -23,7 +23,10 @@ async fn main() {
 
         // other endpoints
         "/" => home GET,
+
+        // image endpoints
         "/image/round" => round_image GET,
+        "/image/colorpreview" => preview_color GET,
     };
 
     let listener = tokio::net::TcpListener::bind(HOST_IP).await.unwrap();

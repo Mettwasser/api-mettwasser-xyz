@@ -79,6 +79,48 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiError"
 
+  /image/colorpreview:
+    get:
+      tags:
+        - Image
+
+      description: Previews a color
+      parameters:
+        - name: hex
+          description: The HEX of the color you want to preview
+          in: query
+          required: true
+          example: 36b5b1
+          schema:
+            type: string
+
+        - name: size
+          description: The size ID of the image
+          in: query
+          schema:
+            type: integer
+            default: 1
+            enum:
+              - 1
+              - 2
+              - 3
+
+      responses:
+        200:
+          description: OK
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
 components:
   schemas:
     ApiError:

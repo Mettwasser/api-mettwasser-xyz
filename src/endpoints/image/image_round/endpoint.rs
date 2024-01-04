@@ -1,11 +1,9 @@
 use super::logic::round;
 use super::logic::RoundImageQueryParams;
-use crate::error::{ApiError, IntoApiError};
+use crate::error::{ApiError, IntoApiError, Result};
 use axum::{body::Bytes, extract::Query, http::header, response::AppendHeaders, Json};
 use image::{io::Reader, ImageFormat};
 use std::{io::Cursor, result::Result as StdResult};
-
-type Result<T> = std::result::Result<T, ApiError>;
 
 async fn fetch_image(url: &str) -> Result<Bytes> {
     reqwest::get(url)
