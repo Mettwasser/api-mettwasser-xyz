@@ -13,7 +13,7 @@ module.exports = {
                 fadein: "fadein 2s forwards",
             },
             dropShadow: {
-                gray: "0 10px 8px rgba(243,244,246.04)",
+                gray: "0 1px 2px rgba(243,244,246.1)",
             },
         },
     },
