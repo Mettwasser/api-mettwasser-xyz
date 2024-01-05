@@ -1,1 +1,2 @@
-pub mod endpoint;
+pub use endpoint::home;
+mod endpoint;

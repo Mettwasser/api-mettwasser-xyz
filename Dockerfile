@@ -3,9 +3,9 @@ FROM rust:latest
 COPY . .
 
 # Download TailwindCSS CLI
-RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-arm64
-RUN chmod +x tailwindcss-linux-arm64
-RUN mv tailwindcss-linux-arm64 tailwindcss
+RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.0/tailwindcss-linux-x64
+RUN chmod +x tailwindcss-linux-x64
+RUN mv tailwindcss-linux-x64 tailwindcss
 
 # Build TailwindCSS
 RUN ./tailwindcss -c ./tailwind.config.js -i ./assets/styles/index.css -o ./build/index.css --minify

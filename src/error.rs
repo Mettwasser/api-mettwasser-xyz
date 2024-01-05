@@ -1,6 +1,8 @@
 use crate::error_codes as ErrorCodes;
 use serde::{Deserialize, Serialize};
 
+pub type Result<T> = std::result::Result<T, ApiError>;
+
 #[derive(Debug, PartialEq, PartialOrd, Deserialize, Serialize)]
 pub struct ApiError {
     pub message: String,

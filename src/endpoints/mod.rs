@@ -1,5 +1,9 @@
-pub use home::endpoint::home;
-pub use image_round::endpoint::round_image;
+// home
+pub use home::home;
 
-pub mod home;
-pub mod image_round;
+// Image
+pub use image::preview_color;
+pub use image::round_image;
+
+mod home;
+mod image;
