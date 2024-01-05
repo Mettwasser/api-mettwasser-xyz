@@ -5,8 +5,8 @@ module.exports = {
         extend: {
             keyframes: {
                 fadein: {
-                    "0%": { opacity: 0, backgroundColor: "#000000" },
-                    "100%": { opacity: 100, backgroundColor: "#262626" },
+                    "0%": { opacity: 0 },
+                    "100%": { opacity: 100 },
                 },
             },
             animation: {
