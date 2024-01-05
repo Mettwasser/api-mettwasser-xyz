@@ -3,6 +3,9 @@ module.exports = {
     content: ["./templates/*.html", "./assets/**/*.js"],
     theme: {
         extend: {
+            screens: {
+                xs: "480px",
+            },
             keyframes: {
                 fadein: {
                     "0%": { opacity: 0 },
