@@ -4,4 +4,5 @@
 /target
 /build
 /rustfmt.toml
-/server.ps1
+/autobuild-start.ps1
+/autobuild-stop.ps1

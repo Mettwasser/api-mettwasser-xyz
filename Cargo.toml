@@ -1,6 +1,6 @@
 [package]
 name = "api-mettwasser-xyz"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
@@ -14,3 +14,6 @@ serde_json = "1.0.108"
 image = "0.24.7"
 axum-swagger-ui = "0.3.0"
 include_dir = "0.7.3"
+rand = "0.8.5"
+lazy_static = "1.4.0"
+color_names = "1.0.0"
