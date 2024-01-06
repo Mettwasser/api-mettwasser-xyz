@@ -121,6 +121,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiError"
 
+  /randomcolor:
+    get:
+      description: "Chooses a random color from a collection of roughly 30.000 named colors and returns some information about it."
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  color_hex:
+                    type: string
+                    example: "#6384b8"
+
+                  preview_url:
+                    type: string
+                    example: "https://api.mettwasser.xyz/image/colorpreview?hex=6384b8"
+
+                  color_name:
+                    type: string
+                    example: "Marine Ink"
+
 components:
   schemas:
     ApiError:
