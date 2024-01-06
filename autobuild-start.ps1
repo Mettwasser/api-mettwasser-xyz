@@ -1,5 +1,5 @@
 # Starts autobuild with cargo and tailwind
-# Cargo and tailwind cli are required to run this ps1 script successfully
+# Cargo and tailwind cli are required to run this powershell script successfully
 
 Write-Host "Dev server started at http://127.0.0.1:3000" -ForegroundColor yellow
 Start-Job -Name "amx-cw" -ScriptBlock {
