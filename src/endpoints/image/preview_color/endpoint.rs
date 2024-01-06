@@ -5,7 +5,7 @@ use image::ImageFormat;
 
 use crate::error::{ApiError, IntoApiError};
 
-use super::logic::PreviewColorQueryParams;
+use super::queryparams::PreviewColorQueryParams;
 
 pub async fn preview_color(
     Query(params): Query<PreviewColorQueryParams>,
