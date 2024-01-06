@@ -4,3 +4,4 @@
 /target
 /build
 /rustfmt.toml
+/server.ps1
