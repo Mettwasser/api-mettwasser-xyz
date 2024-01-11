@@ -1,12 +1,24 @@
-use crate::error_codes as ErrorCodes;
-use serde::{Deserialize, Serialize};
+use std::{error::Error, fmt};
 
-pub type Result<T> = std::result::Result<T, ApiError>;
+use axum::{extract::rejection::QueryRejection, http::StatusCode};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, PartialOrd, Deserialize, Serialize)]
 pub struct ApiError {
     pub message: String,
     pub code: u16,
+}
+
+impl Error for ApiError {}
+
+impl fmt::Display for ApiError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "ApiError occured with message `{}` and status code `{}`.",
+            self.message, self.code
+        )
+    }
 }
 
 impl ApiError {
@@ -27,36 +39,59 @@ impl From<(String, u16)> for ApiError {
     }
 }
 
-pub trait IntoApiError {
-    fn into_api_error(self) -> ApiError;
-}
-
-impl IntoApiError for reqwest::Error {
-    fn into_api_error(self) -> ApiError {
+impl From<reqwest::Error> for ApiError {
+    fn from(value: reqwest::Error) -> Self {
         (
-            format!("Error from requested URL: {}", self),
-            self.status().map_or(500, |status| status.as_u16()),
+            format!("Error from requested URL: {}", value),
+            value.status().map_or(500, |status| status.as_u16()),
         )
             .into()
     }
 }
 
-impl IntoApiError for image::ImageError {
-    fn into_api_error(self) -> ApiError {
+impl From<image::ImageError> for ApiError {
+    fn from(value: image::ImageError) -> Self {
         (
-            format!("Error trying to pass image: {}", self),
-            ErrorCodes::BAD_ARGUMENTS,
+            format!("Error trying to pass image: {}", value),
+            StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
         )
             .into()
     }
 }
 
-impl IntoApiError for std::io::Error {
-    fn into_api_error(self) -> ApiError {
+impl From<std::io::Error> for ApiError {
+    fn from(value: std::io::Error) -> Self {
         (
-            format!("Error occured: {}", self),
-            ErrorCodes::BAD_ARGUMENTS,
+            format!("Error occured: {}", value),
+            StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
         )
             .into()
+    }
+}
+
+pub trait ToApiErrorResult<T> {
+    fn to_api_error_result(self) -> Result<T, ApiError>;
+}
+
+impl<T, E> ToApiErrorResult<T> for std::result::Result<T, E>
+where
+    E: Into<ApiError>,
+{
+    fn to_api_error_result(self) -> Result<T, ApiError> {
+        self.map_err(|err| err.into())
+    }
+}
+
+impl From<QueryRejection> for ApiError {
+    fn from(value: QueryRejection) -> Self {
+        match value {
+            QueryRejection::FailedToDeserializeQueryString(_) => (
+                "Error during deserialization of the query string: Bad Arguments".into(),
+                StatusCode::BAD_REQUEST.as_u16(),
+            )
+                .into(),
+
+            _ => ("Internal Server Error: <QueryRejection>".into(), 500).into(),
+        }
     }
 }
