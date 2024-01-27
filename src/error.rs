@@ -39,6 +39,15 @@ impl From<(String, u16)> for ApiError {
     }
 }
 
+impl From<(&'static str, u16)> for ApiError {
+    fn from((message, code): (&'static str, u16)) -> Self {
+        Self {
+            message: message.to_string(),
+            code,
+        }
+    }
+}
+
 impl From<reqwest::Error> for ApiError {
     fn from(value: reqwest::Error) -> Self {
         (
@@ -73,7 +82,7 @@ pub trait ToApiErrorResult<T> {
     fn to_api_error_result(self) -> Result<T, ApiError>;
 }
 
-impl<T, E> ToApiErrorResult<T> for std::result::Result<T, E>
+impl<T, E> ToApiErrorResult<T> for Result<T, E>
 where
     E: Into<ApiError>,
 {
@@ -86,12 +95,11 @@ impl From<QueryRejection> for ApiError {
     fn from(value: QueryRejection) -> Self {
         match value {
             QueryRejection::FailedToDeserializeQueryString(_) => (
-                "Error during deserialization of the query string: Bad Arguments".into(),
+                "Error during deserialization of the query string: Bad Arguments",
                 StatusCode::BAD_REQUEST.as_u16(),
-            )
-                .into(),
-
-            _ => ("Internal Server Error: <QueryRejection>".into(), 500).into(),
+            ),
+            _ => ("Internal Server Error: <QueryRejection>", 500),
         }
+        .into()
     }
 }
