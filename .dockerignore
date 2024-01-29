@@ -6,3 +6,9 @@
 /rustfmt.toml
 /autobuild-start.ps1
 /autobuild-stop.ps1
+/.gitignore
+/.dockerignore
+/Dockerfile
+/docker-compose.yaml
+/README.md
+/LICENSE

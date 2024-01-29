@@ -13,5 +13,9 @@ RUN ./tailwindcss -c ./tailwind.config.js -i ./assets/styles/index.css -o ./buil
 # Build Rust
 RUN cargo build --release
 
+# Delete tailwind
+RUN rm -f tailwindcss \
+    rm -f tailwind.config.js
+
 # Run the app
 ENTRYPOINT ./target/release/api-mettwasser-xyz

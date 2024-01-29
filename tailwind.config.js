@@ -1,9 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export const content = ["./templates/*.html", "./assets/**/*.js"];
+const defaultTheme = require("tailwindcss/defaultTheme");
 export const theme = {
     extend: {
         screens: {
             xs: "485px",
+            ...defaultTheme.screens
         },
         keyframes: {
             fadein: {
