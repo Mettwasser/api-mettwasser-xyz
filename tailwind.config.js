@@ -2,9 +2,6 @@
 export const content = ["./templates/*.html", "./assets/**/*.js"];
 export const theme = {
     extend: {
-        screens: {
-            xs: "485px",
-        },
         keyframes: {
             fadein: {
                 "0%": { opacity: 0 },
