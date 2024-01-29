@@ -1,3 +1,4 @@
+"use strict";
 export default function typewriter(element, properties) {
     let index = 0;
     let inTag = false;
@@ -9,20 +10,21 @@ export default function typewriter(element, properties) {
             inTag = false;
         }
         if (!inTag) {
+            index++;
             document.querySelector(element).innerHTML = properties.text.slice(
                 0,
-                index + 1
+                index
             );
-            index++;
             if (index >= properties.text.length) {
                 clearInterval(intervalId);
-                if (properties.onFinish === undefined) return;
-                properties.onFinish();
+                if (properties.onFinish !== undefined) {
+                    properties.onFinish();
+                }
             }
         } else {
             index++;
             interval();
         }
     };
-    let intervalId = setInterval(interval, properties.speed);
+    const intervalId = setInterval(interval, properties.speed);
 }
