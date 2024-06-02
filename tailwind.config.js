@@ -4,8 +4,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 export const theme = {
     extend: {
         screens: {
-            xs: "485px",
-            ...defaultTheme.screens
+            xs: "485px"
         },
         keyframes: {
             fadein: {
