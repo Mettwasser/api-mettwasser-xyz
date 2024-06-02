@@ -1,0 +1,216 @@
+openapi: "3.0.2"
+info:
+  title: api.mettwasser.xyz
+  version: "1.0"
+servers:
+  - url: https://api.mettwasser.xyz/
+
+paths:
+  /image/round:
+    get:
+      tags:
+        - Image
+      description: "Rounds the Corners of an image."
+
+      parameters:
+        - name: url
+          description: The URL to the image that should be rounded
+          in: query
+          required: true
+          schema:
+            type: string
+
+        - name: auto
+          description: Whether the API tries to figure out the max. radius on its own. This means if width and height are the same, you'll get a perfectly round image. This will override everything else
+          in: query
+          schema:
+            type: boolean
+            default: false
+
+        - name: corner_radius
+          description: The radius to use when rounding the corners
+          in: query
+          schema:
+            type: integer
+            format: uint32
+            default: 3
+
+        - name: top_left
+          description: This overrides corner_radius for the top left corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+        - name: top_right
+          description: This overrides corner_radius for the top right corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+        - name: bottom_left
+          description: This overrides corner_radius for the bottom left corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+        - name: bottom_right
+          description: This overrides corner_radius for the bottom right corner
+          in: query
+          schema:
+            type: integer
+            format: uint32
+
+      responses:
+        200:
+          description: OK
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /image/colorpreview:
+    get:
+      tags:
+        - Image
+
+      description: Previews a color
+      parameters:
+        - name: hex
+          description: The HEX of the color you want to preview
+          in: query
+          required: true
+          example: 36b5b1
+          schema:
+            type: string
+
+        - name: size
+          description: The size ID of the image
+          in: query
+          schema:
+            type: integer
+            default: 1
+            enum:
+              - 1
+              - 2
+              - 3
+
+      responses:
+        200:
+          description: OK
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /randomcolor:
+    get:
+      description: "Chooses a random color from a collection of roughly 30.000 named colors and returns some information about it."
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  color_hex:
+                    type: string
+                    example: "#6384b8"
+
+                  preview_url:
+                    type: string
+                    example: "https://api.mettwasser.xyz/image/colorpreview?hex=6384b8"
+
+                  color_name:
+                    type: string
+                    example: "Marine Ink"
+
+  /captcha:
+    get:
+      description: "Generates a CAPTCHA"
+
+      parameters:
+        - name: difficulty
+          description: The difficulty of the captcha
+          in: query
+          required: false
+          schema:
+            type: integer
+          example: 5
+
+        - name: text
+          description: Custom text to use for the captcha
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "wP3wBH"
+
+        - name: darkMode
+          description: Whether the image should be in dark mode or not
+          in: query
+          required: false
+          schema:
+            type: boolean
+          example: false
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  solution:
+                    type: string
+                    example: "wP3wBH"
+                  base64_image:
+                    type: string
+                    example: "data:image/jpeg;base64,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"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+components:
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error during processing"
+
+        code:
+          type: integer
+          format: uint16
+          example: 500

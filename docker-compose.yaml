@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  api:
+    image: ghcr.io/mettwasser/api-mettwasser-xyz:latest
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    container_name: api-mettwasser-xyz
+    ports:
+      - "8081:3000"
