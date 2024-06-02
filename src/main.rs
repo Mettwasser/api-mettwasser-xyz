@@ -1,6 +1,9 @@
 use api_mettwasser_xyz::{
     docs::{docs, docs_internal},
-    endpoints::{generate_captcha_response, home, preview_color, random_color, round_image},
+    endpoints::{
+        generate_captcha_image, generate_captcha_response, home, preview_color, random_color,
+        round_image,
+    },
     router,
 };
 
@@ -24,6 +27,7 @@ async fn main() {
             // image endpoints
             "/image/round" => round_image GET,
             "/image/colorpreview" => preview_color GET,
+            "/image/captcha" => generate_captcha_image GET,
             "/captcha" => generate_captcha_response GET,
 
             // utility endpoints

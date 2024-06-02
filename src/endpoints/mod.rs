@@ -2,6 +2,7 @@
 pub use home::home;
 
 // Image
+pub use image::generate_captcha_image;
 pub use image::generate_captcha_response;
 pub use image::preview_color;
 pub use image::round_image;
