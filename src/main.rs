@@ -27,7 +27,7 @@ async fn main() {
             // image endpoints
             "/image/round" => round_image GET,
             "/image/colorpreview" => preview_color GET,
-            "/image/captcha" => generate_captcha_image GET,
+            "/image/gen_captcha" => generate_captcha_image GET,
             "/captcha" => generate_captcha_response GET,
 
             // utility endpoints
