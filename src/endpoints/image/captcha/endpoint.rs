@@ -79,7 +79,7 @@ pub async fn generate_captcha_response(
 
     Ok(Json(CaptchaResponse {
         url: format!(
-            "https://api.mettwasser.com/image/gen_captcha?text={}&difficulty={}&darkMode={}",
+            "https://api.mettwasser.xyz/image/gen_captcha?text={}&difficulty={}&darkMode={}",
             &captcha_params.text, captcha_params.difficulty, captcha_params.dark_mode
         ),
         solution: captcha_params.text,
