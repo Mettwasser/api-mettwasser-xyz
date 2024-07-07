@@ -1,6 +1,6 @@
 use crate::error::ApiError;
 use axum::extract::rejection::QueryRejection;
-use axum::http::header;
+use axum::http::{header, StatusCode};
 use axum::response::AppendHeaders;
 use axum::{extract::Query, Json};
 use captcha_rs::CaptchaBuilder;
@@ -8,6 +8,7 @@ use image::ImageFormat;
 use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 use std::result::Result as StdResult;
+use utoipa::{IntoParams, ToSchema};
 
 mod defaults {
     use rand::Rng;
@@ -22,7 +23,7 @@ mod defaults {
 
     pub fn captcha_text() -> String {
         let mut rng = rand::thread_rng();
-        (0..=5)
+        (0..5)
             .map(|_| {
                 let idx = rng.gen_range(0..CHARSET.len());
                 CHARSET[idx] as char
@@ -31,50 +32,68 @@ mod defaults {
     }
 }
 
-#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, PartialEq, PartialOrd, Deserialize, IntoParams)]
+#[into_params(parameter_in = Query)]
 pub struct CaptchaQueryParams {
     #[serde(default = "defaults::difficulty")]
+    #[param(minimum = 1, maximum = 10, default = 5)]
     pub difficulty: u32,
 
     #[serde(default = "defaults::captcha_text")]
+    #[param(required = false, min_length = 1, max_length = 5)]
+    /// Defaults to a random string of length 5
     pub text: String,
 
     #[serde(default)]
     #[serde(rename = "darkMode")]
+    #[param(default = false)]
     pub dark_mode: bool,
 }
 
-#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, PartialEq, PartialOrd, Deserialize, IntoParams)]
+#[into_params(parameter_in = Query)]
 pub struct GenCaptchaQueryParams {
+    #[param(minimum = 1, maximum = 10)]
     pub difficulty: u32,
 
+    #[param(required = true, min_length = 1, max_length = 5)]
     pub text: String,
 
     #[serde(rename = "darkMode")]
     pub dark_mode: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct CaptchaResponse {
     pub solution: String,
     pub url: String,
 }
 
+#[utoipa::path(
+    get,
+    path = "/captcha", 
+    params(CaptchaQueryParams),
+    responses(
+        (status = 200, content_type = "image/png", description = "The raw image")
+    )
+)]
 pub async fn generate_captcha_response(
     query: StdResult<Query<CaptchaQueryParams>, QueryRejection>,
-) -> StdResult<Json<CaptchaResponse>, Json<ApiError>> {
+) -> StdResult<Json<CaptchaResponse>, ApiError> {
     let Query(captcha_params) = query.map_err(ApiError::from)?;
 
     if !(1..=10).contains(&captcha_params.difficulty) {
-        return Err(Json(
-            ("The difficulty must be in between 1 and 10.", 400).into(),
+        return Err(ApiError::Any(
+            StatusCode::BAD_REQUEST,
+            "The difficulty must be in between 1 and 10.".to_owned(),
         ));
     }
 
-    if captcha_params.text.len() <= 5 {
-        return Err(Json(ApiError::bad_arguments(
-            "Captcha text length has to 5 or less.",
-        )));
+    if !(1..=5).contains(&captcha_params.text.len()) {
+        return Err(ApiError::Any(
+            StatusCode::BAD_REQUEST,
+            "Captcha text length has to 5 or less.".to_owned(),
+        ));
     }
 
     Ok(Json(CaptchaResponse {
@@ -86,6 +105,14 @@ pub async fn generate_captcha_response(
     }))
 }
 
+#[utoipa::path(
+    get,
+    path = "/gen_captcha",
+    params(GenCaptchaQueryParams),
+    responses(
+        (status = 200, body = inline(CaptchaResponse))
+    )
+)]
 pub async fn generate_captcha_image(
     query: StdResult<Query<GenCaptchaQueryParams>, QueryRejection>,
 ) -> StdResult<
@@ -93,21 +120,24 @@ pub async fn generate_captcha_image(
         AppendHeaders<[(header::HeaderName, &'static str); 1]>,
         Vec<u8>,
     ),
-    Json<ApiError>,
+    ApiError,
 > {
-    let Query(captcha_params) = query.map_err(ApiError::from)?;
+    let Query(captcha_params) = query?;
 
     if !(1..=10).contains(&captcha_params.difficulty) {
-        return Err(Json(
-            ("The difficulty must be in between 1 and 10.", 400).into(),
+        return Err(ApiError::Any(
+            StatusCode::BAD_REQUEST,
+            "The difficulty must be in between 1 and 10.".to_owned(),
         ));
     }
 
-    if captcha_params.text.len() <= 5 {
-        return Err(Json(ApiError::bad_arguments(
-            "Captcha text length has to 5 or less.",
-        )));
+    if !(1..=5).contains(&captcha_params.text.len()) {
+        return Err(ApiError::Any(
+            StatusCode::BAD_REQUEST,
+            "Captcha text length has to 5 or less.".to_owned(),
+        ));
     }
+
     let captcha = tokio::task::spawn_blocking(move || {
         CaptchaBuilder::new()
             .compression(30)
@@ -119,7 +149,12 @@ pub async fn generate_captcha_image(
             .build()
     })
     .await
-    .map_err(|_err| Json(ApiError::internal_server_error("Something went wrong")))?;
+    .map_err(|_err| {
+        ApiError::Any(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Something went wrong during captcha generation.".to_owned(),
+        )
+    })?;
 
     let mut buffer: Vec<u8> = Vec::new();
 

@@ -1,9 +1,12 @@
-pub mod docs;
-pub mod endpoints;
+pub mod api;
 pub mod error;
-pub mod macros;
+mod home;
 
-use include_dir::{include_dir, Dir};
+use {
+    axum::{routing::get, Router},
+    error::ApiError,
+    include_dir::{include_dir, Dir},
+};
 
 const TEMPLATES: Dir = include_dir!("./templates");
 
@@ -16,3 +19,11 @@ impl<'a> GetFileContentsFromDir<'a> for Dir<'a> {
         self.get_file(filename).unwrap().contents_utf8().unwrap()
     }
 }
+
+pub fn router() -> Router {
+    Router::new()
+        .merge(api::router())
+        .route("/", get(home::home))
+}
+
+pub type Result<T> = std::result::Result<T, ApiError>;

@@ -1,21 +1,8 @@
-use std::cmp::min;
+use {super::RoundImageQueryParams, std::cmp::min};
 
 use image::{ImageBuffer, Rgba};
-use serde::{Deserialize, Serialize};
 
 use crate::error::ApiError;
-
-mod defaults {
-    #[inline(always)]
-    pub fn radius() -> u32 {
-        3
-    }
-
-    #[inline(always)]
-    pub fn auto() -> bool {
-        false
-    }
-}
 
 pub fn round(
     img: &mut ImageBuffer<Rgba<u8>, Vec<u8>>,
@@ -30,9 +17,7 @@ pub fn round(
         (tl, tr, bl, br) = [smaller_dimension / 2; 4].into();
     } else {
         (tl, tr, bl, br) = params.list_corners();
-        if tl + tr > width || tr + bl > width || tl + br > height || tr + bl > height {
-            return Err(ApiError::new("Radius out of range!", 400));
-        }
+        if tl + tr > width || tr + bl > width || tl + br > height || tr + bl > height {}
     };
 
     // top left
@@ -56,7 +41,6 @@ fn border_radius(
     }
     let r0 = r;
 
-    // 16x antialiasing: 16x16 grid creates 256 possible shades, great for u8!
     let r = 16 * r;
 
     let mut x = 0;
@@ -75,15 +59,12 @@ fn border_radius(
     };
 
     'l: loop {
-        // (comments for bottom_right case:)
-        // remove contents below current position
         {
             let i = x / 16;
             for j in y / 16 + 1..r0 {
                 img[coordinates(r0 - i, r0 - j)].0[3] = 0;
             }
         }
-        // remove contents right of current position mirrored
         {
             let j = x / 16;
             for i in y / 16 + 1..r0 {
@@ -91,7 +72,6 @@ fn border_radius(
             }
         }
 
-        // draw when moving to next pixel in x-direction
         if !skip_draw {
             draw(img, alpha, x / 16 - 1, y / 16);
             draw(img, alpha, y / 16, x / 16 - 1);
@@ -142,55 +122,5 @@ fn border_radius(
         for j in range.clone() {
             img[coordinates(r0 - i, r0 - j)].0[3] = 0;
         }
-    }
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct RoundImageQueryParams {
-    pub url: String,
-
-    #[serde(default = "defaults::auto")]
-    pub auto: bool,
-
-    #[serde(default = "defaults::radius")]
-    corner_radius: u32,
-
-    top_left: Option<u32>,
-
-    top_right: Option<u32>,
-
-    bottom_left: Option<u32>,
-
-    bottom_right: Option<u32>,
-}
-
-impl RoundImageQueryParams {
-    #[inline(always)]
-    pub fn top_left(&self) -> u32 {
-        self.top_left.unwrap_or(self.corner_radius)
-    }
-
-    #[inline(always)]
-    pub fn top_right(&self) -> u32 {
-        self.top_right.unwrap_or(self.corner_radius)
-    }
-
-    #[inline(always)]
-    pub fn bottom_left(&self) -> u32 {
-        self.bottom_left.unwrap_or(self.corner_radius)
-    }
-
-    #[inline(always)]
-    pub fn bottom_right(&self) -> u32 {
-        self.bottom_right.unwrap_or(self.corner_radius)
-    }
-
-    pub fn list_corners(&self) -> (u32, u32, u32, u32) {
-        (
-            self.top_left(),
-            self.top_right(),
-            self.bottom_left(),
-            self.bottom_right(),
-        )
     }
 }

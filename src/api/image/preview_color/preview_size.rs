@@ -1,3 +1,11 @@
+use {
+    serde_repr::{Deserialize_repr, Serialize_repr},
+    utoipa::ToSchema,
+};
+
+#[derive(Debug, Deserialize_repr, Serialize_repr, ToSchema)]
+#[repr(u8)]
+#[schema(default = 1)]
 pub enum PreviewSize {
     Small,
     Medium,
