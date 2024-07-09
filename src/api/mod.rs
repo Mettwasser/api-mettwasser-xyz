@@ -30,12 +30,12 @@ use utility::UtilityDocs;
 #[cfg_attr(not(debug_assertions), 
     openapi(
         servers(
-            (url = "http://api.mettwasser.xyz")
+            (url = "https://api.mettwasser.xyz")
         )
     )
 )]
 // DEBUG
-#[cfg_attr(not(debug_assertions), 
+#[cfg_attr(debug_assertions, 
     openapi(
         servers(
             (url = "http://127.0.0.1:3000"),
