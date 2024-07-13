@@ -1,6 +1,6 @@
 use {
     axum::{
-        extract::{rejection::QueryRejection, FromRequest},
+        extract::rejection::{JsonRejection, QueryRejection},
         http::StatusCode,
         response::IntoResponse,
     },
@@ -29,12 +29,15 @@ impl ErrorResponse {
 #[error(transparent)]
 pub enum ApiError {
     QueryRejection(#[from] QueryRejection),
+    JsonRejection(#[from] JsonRejection),
     ImageError(#[from] ImageError),
     Io(#[from] io::Error),
     Reqwest(#[from] reqwest::Error),
     #[error("{0}")]
+    FetchError(String),
+    #[error("{1}")]
     Any(StatusCode, String),
-    #[error("{0}")]
+    #[error("{1}")]
     AnyStatic(StatusCode, &'static str),
 }
 
@@ -48,9 +51,11 @@ impl IntoResponse for ApiError {
         use ApiError::*;
         let (code, msg) = match self {
             QueryRejection(err) => (StatusCode::BAD_REQUEST, err.body_text()),
+            JsonRejection(err) => (StatusCode::BAD_REQUEST, err.body_text()),
             ImageError(err) => (StatusCode::INTERNAL_SERVER_ERROR, err.to_string()),
             Io(err) => (StatusCode::INTERNAL_SERVER_ERROR, err.kind().to_string()),
             Reqwest(err) => (StatusCode::INTERNAL_SERVER_ERROR, err.to_string()),
+            FetchError(msg) => (StatusCode::BAD_REQUEST, msg),
             Any(code, msg) => (code, msg),
             AnyStatic(code, msg) => (code, msg.to_owned()),
         };
@@ -58,7 +63,3 @@ impl IntoResponse for ApiError {
         (code, axum::Json(ErrorResponse::new(code.as_u16(), msg))).into_response()
     }
 }
-
-#[derive(Debug, FromRequest)]
-#[from_request(via(axum::Json), rejection(ApiError))]
-pub struct Json<T>(T);

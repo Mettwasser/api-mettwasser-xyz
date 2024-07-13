@@ -1,12 +1,8 @@
 pub mod preview_size;
 
-use std::io::Cursor;
+use {crate::extract::Query, std::io::Cursor};
 
-use axum::{
-    extract::{rejection::QueryRejection, Query},
-    http::header,
-    response::AppendHeaders,
-};
+use axum::{http::header, response::AppendHeaders};
 use image::ImageFormat;
 use serde::{Deserialize, Serialize};
 use utoipa::IntoParams;
@@ -49,7 +45,7 @@ impl From<PreviewColorQueryParams> for (HexColor, PreviewSize) {
     )
 )]
 pub async fn preview_color(
-    query: Result<Query<PreviewColorQueryParams>, QueryRejection>,
+    Query(params): Query<PreviewColorQueryParams>,
 ) -> Result<
     (
         AppendHeaders<[(header::HeaderName, &'static str); 1]>,
@@ -57,7 +53,6 @@ pub async fn preview_color(
     ),
     ApiError,
 > {
-    let Query(params) = query?;
     let (hex, prevsize) = params.into();
     let img = hex.into_preview(prevsize);
 

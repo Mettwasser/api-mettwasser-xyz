@@ -6,6 +6,8 @@ use rand::thread_rng;
 use serde::Serialize;
 use utoipa::ToSchema;
 
+use crate::utils::rgb_to_hex;
+
 #[derive(Debug, PartialEq, PartialOrd, Serialize, ToSchema)]
 pub struct RandomColorResponse {
     color_hex: String,
@@ -18,17 +20,14 @@ impl RandomColorResponse {
         let random_color = COLOR_MAP.keys().choose(&mut thread_rng()).unwrap();
         let color_name = rgb_to_color_name(random_color);
 
-        let color_hex: String = format!(
-            "{:02x}{:02x}{:02x}",
-            random_color[0], random_color[1], random_color[2]
-        );
+        let color_hex: String = rgb_to_hex(random_color);
 
         Self {
-            color_hex: format!("#{}", &color_hex),
             preview_url: format!(
                 "https://api.mettwasser.xyz/image/colorpreview?hex={}",
-                color_hex
+                &color_hex
             ),
+            color_hex,
             color_name,
         }
     }

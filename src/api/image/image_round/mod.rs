@@ -1,27 +1,15 @@
 pub(super) mod logic;
 
 use crate::error::ApiError;
-use axum::extract::rejection::QueryRejection;
-use axum::{body::Bytes, extract::Query, http::header, response::AppendHeaders};
-use image::{io::Reader, ImageFormat};
+use crate::extract::Query;
+use crate::utils::{fetch_raw_image, image_from_bytes};
+use axum::{http::header, response::AppendHeaders};
+use image::ImageFormat;
 use logic::round;
 use serde::{Deserialize, Serialize};
 use utoipa::IntoParams;
 
 use std::{io::Cursor, result::Result as StdResult};
-
-async fn fetch_image(url: &str) -> Result<Bytes, ApiError> {
-    Ok(reqwest::get(url).await?.bytes().await?)
-}
-
-fn image_from_bytes(
-    bytes: Bytes,
-) -> Result<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, ApiError> {
-    Ok(Reader::new(Cursor::new(bytes))
-        .with_guessed_format()?
-        .decode()?
-        .to_rgba8())
-}
 
 #[derive(Debug, Deserialize, Serialize, IntoParams)]
 pub struct RoundImageQueryParams {
@@ -81,7 +69,7 @@ impl RoundImageQueryParams {
     )
 )]
 pub async fn round_image(
-    query: std::result::Result<Query<RoundImageQueryParams>, QueryRejection>,
+    Query(round_image_params): Query<RoundImageQueryParams>,
 ) -> StdResult<
     (
         AppendHeaders<[(header::HeaderName, &'static str); 1]>,
@@ -89,8 +77,7 @@ pub async fn round_image(
     ),
     ApiError,
 > {
-    let Query(round_image_params) = query.map_err(ApiError::from)?;
-    let bytes = fetch_image(&round_image_params.url).await?;
+    let bytes = fetch_raw_image(&round_image_params.url).await?;
 
     let mut img = image_from_bytes(bytes)?;
 
@@ -98,8 +85,7 @@ pub async fn round_image(
 
     let mut buffer: Vec<u8> = Vec::new();
 
-    img.write_to(&mut Cursor::new(&mut buffer), ImageFormat::Png)
-        .map_err(ApiError::from)?;
+    img.write_to(&mut Cursor::new(&mut buffer), ImageFormat::Png)?;
 
     Ok((AppendHeaders([(header::CONTENT_TYPE, "image/png")]), buffer))
 }
