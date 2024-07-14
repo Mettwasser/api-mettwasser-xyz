@@ -1,19 +1,22 @@
-use {
-    crate::{
-        error::ApiError,
-        extract::{Json, Query},
-        utils::{fetch_raw_image, image_from_bytes, rgb_to_hex},
-    },
-    image::Pixel,
-    serde::{Deserialize, Serialize},
-    std::collections::HashMap,
-    utoipa::{IntoParams, ToSchema},
+use crate::{
+    error::ApiError,
+    extract::{Json, Query},
+    utils::{fetch_raw_image, image_from_bytes, rgb_to_hex},
 };
+use image::Pixel;
+use serde::{Deserialize, Serialize};
+use serde_default_utils::default_usize;
+use std::collections::HashMap;
+use utoipa::{IntoParams, ToSchema};
 
 #[derive(Debug, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub struct DominantColorQueryParams {
     url: String,
+
+    #[serde(default = "default_usize::<10>")]
+    #[param(default = 10)]
+    limit: usize,
 }
 
 #[derive(Serialize, ToSchema)]
@@ -58,5 +61,10 @@ pub async fn dominant_colors(
 
     dominant_colors.sort_by(|a, b| b.pixels_counted.cmp(&a.pixels_counted));
 
-    Ok(Json(dominant_colors))
+    Ok(Json(
+        dominant_colors
+            .into_iter()
+            .take(query_params.limit)
+            .collect(),
+    ))
 }

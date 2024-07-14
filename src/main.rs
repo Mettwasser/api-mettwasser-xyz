@@ -1,5 +1,8 @@
-use {api_mettwasser_xyz::api::ApiDocs, axum::Router, utoipa_swagger_ui::SwaggerUi};
-use {tower_http::services::ServeDir, utoipa::OpenApi};
+use api_mettwasser_xyz::api::ApiDocs;
+use axum::Router;
+use tower_http::services::ServeDir;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 #[cfg(debug_assertions)]
 const HOST_IP: &str = "127.0.0.1:3000";

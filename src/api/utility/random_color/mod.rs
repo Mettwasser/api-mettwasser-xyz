@@ -1,12 +1,9 @@
+use crate::utils::rgb_to_hex;
 use axum::response::Json;
-
 use color_names::{rgb_to_color_name, COLOR_MAP};
-use rand::seq::IteratorRandom;
-use rand::thread_rng;
+use rand::{seq::IteratorRandom, thread_rng};
 use serde::Serialize;
 use utoipa::ToSchema;
-
-use crate::utils::rgb_to_hex;
 
 #[derive(Debug, PartialEq, PartialOrd, Serialize, ToSchema)]
 pub struct RandomColorResponse {

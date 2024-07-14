@@ -1,26 +1,28 @@
 pub(super) mod logic;
 
-use crate::error::ApiError;
-use crate::extract::Query;
-use crate::utils::{fetch_raw_image, image_from_bytes};
+use crate::{
+    error::ApiError,
+    extract::Query,
+    utils::{fetch_raw_image, image_from_bytes},
+};
 use axum::{http::header, response::AppendHeaders};
 use image::ImageFormat;
 use logic::round;
 use serde::{Deserialize, Serialize};
-use utoipa::IntoParams;
-
+use serde_default_utils::default_u32;
 use std::{io::Cursor, result::Result as StdResult};
+use utoipa::IntoParams;
 
 #[derive(Debug, Deserialize, Serialize, IntoParams)]
 pub struct RoundImageQueryParams {
     /// The URL to the image that should be rounded
     pub url: String,
 
-    #[serde(default = "defaults::auto")]
+    #[serde(default)]
     /// Whether the API tries to figure out the max. radius on its own. This means if width and height are the same, you'll get a perfectly round image. This will override everything else
     pub auto: bool,
 
-    #[serde(default = "defaults::radius")]
+    #[serde(default = "default_u32::<3>")]
     /// The radius to use when rounding the corners. Specifying specific corners overrides this for said corner.
     corner_radius: u32,
 
@@ -88,16 +90,4 @@ pub async fn round_image(
     img.write_to(&mut Cursor::new(&mut buffer), ImageFormat::Png)?;
 
     Ok((AppendHeaders([(header::CONTENT_TYPE, "image/png")]), buffer))
-}
-
-mod defaults {
-    #[inline(always)]
-    pub fn radius() -> u32 {
-        3
-    }
-
-    #[inline(always)]
-    pub fn auto() -> bool {
-        false
-    }
 }

@@ -1,0 +1,32 @@
+{
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "rust-analyzer.showUnlinkedFileNotification": false,
+    "cSpell.words": [
+        "abcdefghijkmnpqrstuvwxyz",
+        "ABCDEFGHJKLMNPQRSTUVWXYZ",
+        "Capctha",
+        "colorpreview",
+        "cpatcha",
+        "mettwasser",
+        "mila",
+        "openapi",
+        "prevsize",
+        "randomcolor",
+        "reqwest",
+        "thiserror",
+        "utoipa"
+    ],
+    "[html]": {
+        "editor.suggest.insertMode": "replace",
+        "editor.quickSuggestions": {
+            "other": "on",
+            "comments": "off",
+            "strings": "on"
+        }
+    },
+    "rust-analyzer.rustfmt.extraArgs": [
+        "+nightly"
+    ]
+}

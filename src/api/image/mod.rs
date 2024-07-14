@@ -1,10 +1,8 @@
 pub mod captcha;
 pub mod image_round;
 pub mod preview_color;
-use axum::routing::get;
-use axum::Router;
-pub use captcha::generate_captcha_image;
-pub use captcha::generate_captcha_response;
+use axum::{routing::get, Router};
+pub use captcha::{generate_captcha_image, generate_captcha_response};
 use dominant_colors::dominant_colors;
 pub use image_round::round_image;
 pub use preview_color::preview_color;
@@ -12,11 +10,9 @@ mod dominant_colors;
 mod hex_color;
 
 mod docs {
+    use super::{captcha::*, dominant_colors::*, image_round::*, preview_color::*};
+    use preview_size::PreviewSize;
     use utoipa::OpenApi;
-    use {
-        super::captcha::*, super::dominant_colors::*, super::image_round::*,
-        super::preview_color::*, preview_size::PreviewSize,
-    };
 
     #[derive(OpenApi)]
     #[openapi(

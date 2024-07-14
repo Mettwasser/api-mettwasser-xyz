@@ -1,14 +1,12 @@
-use {
-    axum::{
-        extract::rejection::{JsonRejection, QueryRejection},
-        http::StatusCode,
-        response::IntoResponse,
-    },
-    image::ImageError,
-    serde::Serialize,
-    std::io,
-    thiserror::Error,
+use axum::{
+    extract::rejection::{JsonRejection, QueryRejection},
+    http::StatusCode,
+    response::IntoResponse,
 };
+use image::ImageError;
+use serde::Serialize;
+use std::io;
+use thiserror::Error;
 
 #[derive(Debug, Serialize)]
 pub struct ErrorResponse {

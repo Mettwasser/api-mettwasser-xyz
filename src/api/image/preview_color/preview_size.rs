@@ -1,7 +1,5 @@
-use {
-    serde_repr::{Deserialize_repr, Serialize_repr},
-    utoipa::ToSchema,
-};
+use serde_repr::{Deserialize_repr, Serialize_repr};
+use utoipa::ToSchema;
 
 #[derive(Debug, Deserialize_repr, Serialize_repr, ToSchema)]
 #[repr(u8)]

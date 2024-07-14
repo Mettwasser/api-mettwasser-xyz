@@ -1,8 +1,7 @@
-use {super::RoundImageQueryParams, std::cmp::min};
-
-use image::{ImageBuffer, Rgba};
-
+use super::RoundImageQueryParams;
 use crate::error::ApiError;
+use image::{ImageBuffer, Rgba};
+use std::cmp::min;
 
 pub fn round(
     img: &mut ImageBuffer<Rgba<u8>, Vec<u8>>,

@@ -1,9 +1,7 @@
-use {
-    crate::error::ApiError,
-    axum::body::Bytes,
-    image::io::Reader,
-    std::{io::Cursor, time::Duration},
-};
+use crate::error::ApiError;
+use axum::body::Bytes;
+use image::io::Reader;
+use std::{io::Cursor, time::Duration};
 
 pub async fn fetch_raw_image(url: &str) -> Result<Bytes, ApiError> {
     let resp = reqwest::Client::builder()

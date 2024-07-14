@@ -1,14 +1,13 @@
-pub mod extract;
-pub mod utils;
 pub mod api;
 pub mod error;
+pub mod extract;
 mod home;
+pub mod utils;
 
-use {
-    axum::{routing::get, Router},
-    error::ApiError,
-    include_dir::{include_dir, Dir},
-};
+use axum::{routing::get, Router};
+use error::ApiError;
+use extract::Json;
+use include_dir::{include_dir, Dir};
 
 const TEMPLATES: Dir = include_dir!("./templates");
 
@@ -28,4 +27,4 @@ pub fn router() -> Router {
         .route("/", get(home::home))
 }
 
-pub type Result<T> = std::result::Result<T, ApiError>;
+pub type ApiResult<T> = std::result::Result<Json<T>, ApiError>;

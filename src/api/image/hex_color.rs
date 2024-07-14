@@ -1,6 +1,5 @@
-use image::{ImageBuffer, Rgb};
-
 use super::preview_color::preview_size::PreviewSize;
+use image::{ImageBuffer, Rgb};
 
 pub struct HexColor {
     red: u8,

@@ -1,11 +1,9 @@
-use {
-    crate::error::ApiError,
-    axum::{
-        extract::{FromRequest, FromRequestParts},
-        response::IntoResponse,
-    },
-    serde::Serialize,
+use crate::error::ApiError;
+use axum::{
+    extract::{FromRequest, FromRequestParts},
+    response::IntoResponse,
 };
+use serde::Serialize;
 
 #[derive(Debug, FromRequest)]
 #[from_request(via(axum::Json), rejection(ApiError))]

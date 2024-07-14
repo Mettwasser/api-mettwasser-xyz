@@ -1,16 +1,13 @@
 pub mod preview_size;
 
-use {crate::extract::Query, std::io::Cursor};
-
+use super::hex_color::HexColor;
+use crate::{error::ApiError, extract::Query};
 use axum::{http::header, response::AppendHeaders};
 use image::ImageFormat;
-use serde::{Deserialize, Serialize};
-use utoipa::IntoParams;
-
-use crate::error::ApiError;
-
-use super::hex_color::HexColor;
 use preview_size::PreviewSize;
+use serde::{Deserialize, Serialize};
+use std::io::Cursor;
+use utoipa::IntoParams;
 
 mod defaults {
     use super::preview_size::PreviewSize;

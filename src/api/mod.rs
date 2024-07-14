@@ -4,10 +4,7 @@ pub mod utility;
 use axum::Router;
 // Image
 pub use image::generate_captcha_image;
-pub use image::generate_captcha_response;
-pub use image::preview_color;
-pub use image::round_image;
-
+pub use image::{generate_captcha_response, preview_color, round_image};
 // Utility
 pub use utility::random_color::random_color;
 use utoipa::OpenApi;
@@ -16,7 +13,6 @@ mod image;
 
 use image::ImageDocs;
 use utility::UtilityDocs;
-
 
 #[derive(OpenApi)]
 // RELEASE

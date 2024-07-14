@@ -34,7 +34,7 @@ dependencies = [
 
 [[package]]
 name = "api-mettwasser-xyz"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "axum",
  "axum-swagger-ui",
@@ -48,6 +48,7 @@ dependencies = [
  "rand 0.8.5",
  "reqwest 0.11.23",
  "serde",
+ "serde_default_utils",
  "serde_json",
  "serde_repr",
  "thiserror",
@@ -1958,6 +1959,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "25dd9975e68d0cb5aa1120c288333fc98731bd1dd12f561e468ea4728c042b89"
 dependencies = [
  "serde_derive",
+]
+
+[[package]]
+name = "serde-inline-default"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9980133dc534d02ab08df3b384295223a45090c40a4c46240e3eaa982b495910"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
+]
+
+[[package]]
+name = "serde_default_utils"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08cfeb4ce708d7d1e4cec34a291b9b920395d3fd4c7c072fac22c345365f770c"
+dependencies = [
+ "paste",
+ "serde-inline-default",
 ]
 
 [[package]]

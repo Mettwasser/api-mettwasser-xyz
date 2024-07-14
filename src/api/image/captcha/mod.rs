@@ -1,13 +1,17 @@
-use crate::error::ApiError;
-use axum::extract::rejection::QueryRejection;
-use axum::http::{header, StatusCode};
-use axum::response::AppendHeaders;
-use axum::{extract::Query, Json};
+use crate::{
+    error::ApiError,
+    extract::{Json, Query},
+    ApiResult,
+};
+use axum::{
+    http::{header, StatusCode},
+    response::AppendHeaders,
+};
 use captcha_rs::CaptchaBuilder;
 use image::ImageFormat;
 use serde::{Deserialize, Serialize};
+use serde_default_utils::default_u32;
 use std::io::Cursor;
-use std::result::Result as StdResult;
 use utoipa::{IntoParams, ToSchema};
 
 mod defaults {
@@ -16,10 +20,6 @@ mod defaults {
     const CHARSET: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ\
     abcdefghijkmnpqrstuvwxyz\
     23456789";
-
-    pub fn difficulty() -> u32 {
-        5
-    }
 
     pub fn captcha_text() -> String {
         let mut rng = rand::thread_rng();
@@ -35,7 +35,7 @@ mod defaults {
 #[derive(Debug, PartialEq, PartialOrd, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub struct CaptchaQueryParams {
-    #[serde(default = "defaults::difficulty")]
+    #[serde(default = "default_u32::<5>")]
     #[param(minimum = 1, maximum = 10, default = 5)]
     pub difficulty: u32,
 
@@ -78,10 +78,8 @@ pub struct CaptchaResponse {
     )
 )]
 pub async fn generate_captcha_response(
-    query: StdResult<Query<CaptchaQueryParams>, QueryRejection>,
-) -> StdResult<Json<CaptchaResponse>, ApiError> {
-    let Query(captcha_params) = query.map_err(ApiError::from)?;
-
+    Query(captcha_params): Query<CaptchaQueryParams>,
+) -> ApiResult<CaptchaResponse> {
     if !(1..=10).contains(&captcha_params.difficulty) {
         return Err(ApiError::Any(
             StatusCode::BAD_REQUEST,
@@ -114,16 +112,14 @@ pub async fn generate_captcha_response(
     )
 )]
 pub async fn generate_captcha_image(
-    query: StdResult<Query<GenCaptchaQueryParams>, QueryRejection>,
-) -> StdResult<
+    Query(captcha_params): Query<GenCaptchaQueryParams>,
+) -> Result<
     (
         AppendHeaders<[(header::HeaderName, &'static str); 1]>,
         Vec<u8>,
     ),
     ApiError,
 > {
-    let Query(captcha_params) = query?;
-
     if !(1..=10).contains(&captcha_params.difficulty) {
         return Err(ApiError::Any(
             StatusCode::BAD_REQUEST,
